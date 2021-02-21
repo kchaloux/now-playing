@@ -1,0 +1,9 @@
+{
+  "source-url": "http://localhost:9863/",
+  "polling-interval": 1000,
+  "album-art-path": "./album.jpg",
+  "song-info-path": "./now-playing.txt",
+  "song-info-format": "{song} by {artist}",
+  "log-file-path": "./log.txt",
+  "enable-logging": true,
+}
