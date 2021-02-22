@@ -118,11 +118,26 @@ namespace NowPlaying.Model
 
         private async void TimerCallback(object sender, ElapsedEventArgs args)
         {
-            var cancellationToken = _cancellationTokenSource?.Token ?? CancellationToken.None;
+            var timeoutCancellationTokenSource = new CancellationTokenSource(_configuration.PollingInterval*2);
+            CancellationTokenSource cancellationTokenSource;
+            if (_cancellationTokenSource != null)
+            {
+                cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
+                    _cancellationTokenSource.Token,
+                    timeoutCancellationTokenSource.Token);
+            }
+            else
+            {
+                cancellationTokenSource = timeoutCancellationTokenSource;
+            }
+            
             try
             {
                 var web = new HtmlWeb();
-                var doc = await web.LoadFromWebAsync(_configuration.SourceUrl, Encoding.UTF8, cancellationToken);
+                var doc = await web.LoadFromWebAsync(
+                    _configuration.SourceUrl,
+                    Encoding.UTF8,
+                    cancellationTokenSource.Token);
 
                 var infoDiv = doc.DocumentNode.FirstDescendantWithClass("div", "card horizontal");
                 if (infoDiv != null)
@@ -146,11 +161,22 @@ namespace NowPlaying.Model
                 }
                 OnNowPlayingChanged(null);
             }
-            catch (TaskCanceledException) { /* Ignore these, they are expected */ }
+            catch (TaskCanceledException)
+            {
+                if (timeoutCancellationTokenSource.IsCancellationRequested)
+                {
+                    _logger?.Log("Polling timed out");
+                }
+            }
             catch (Exception ex)
             {
                 _logger?.Log(ex);
                 OnNowPlayingChanged(null);
+            }
+            finally
+            {
+                timeoutCancellationTokenSource.Dispose();
+                cancellationTokenSource.Dispose();
             }
         }
 
