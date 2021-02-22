@@ -19,16 +19,6 @@ namespace NowPlaying.Model
         #region Properties
 
         /// <summary>
-        /// Gets the <see cref="Configuration"/> to use when scraping data from the remote URL.
-        /// </summary>
-        public Configuration Configuration { get; }
-
-        /// <summary>
-        /// Gets the <see cref="Logger"/> being used by this watcher.
-        /// </summary>
-        public Logger Logger { get; }
-
-        /// <summary>
         /// Gets whether or not the watcher is currently started.
         /// </summary>
         public bool IsRunning { get; private set; }
@@ -57,6 +47,9 @@ namespace NowPlaying.Model
         #region Fields
 
         private readonly object _lockObject = new object();
+        private readonly Logger _logger;
+        private readonly Configuration _configuration;
+
         private CancellationTokenSource _cancellationTokenSource;
         private NowPlayingInfo _lastNowPlayingInfo;
         private Timer _timer;
@@ -72,8 +65,8 @@ namespace NowPlaying.Model
         /// <param name="logger">The <see cref="Logger"/> being used by this watcher.</param>
         public NowPlayingWatcher(Configuration configuration, Logger logger)
         {
-            Configuration = configuration;
-            Logger = logger;
+            _configuration = configuration;
+            _logger = logger;
         }
 
         #endregion
@@ -92,9 +85,10 @@ namespace NowPlaying.Model
                     return;
                 }
                 _cancellationTokenSource = new CancellationTokenSource();
-                _timer = new Timer(Configuration.PollingInterval);
+                _timer = new Timer(_configuration.PollingInterval);
                 _timer.Elapsed += TimerCallback;
                 _timer.Start();
+                _logger?.Log("Started watching");
                 IsRunning = true;
             }
         }
@@ -117,6 +111,7 @@ namespace NowPlaying.Model
                 _cancellationTokenSource.Cancel();
                 _cancellationTokenSource.Dispose();
                 _cancellationTokenSource = null;
+                _logger?.Log("Stopped watching");
                 IsRunning = false;
             }
         }
@@ -127,7 +122,7 @@ namespace NowPlaying.Model
             try
             {
                 var web = new HtmlWeb();
-                var doc = await web.LoadFromWebAsync(Configuration.SourceUrl, Encoding.UTF8, cancellationToken);
+                var doc = await web.LoadFromWebAsync(_configuration.SourceUrl, Encoding.UTF8, cancellationToken);
 
                 var infoDiv = doc.DocumentNode.FirstDescendantWithClass("div", "card horizontal");
                 if (infoDiv != null)
@@ -154,7 +149,7 @@ namespace NowPlaying.Model
             catch (TaskCanceledException) { /* Ignore these, they are expected */ }
             catch (Exception ex)
             {
-                Logger?.Log(ex);
+                _logger?.Log(ex);
                 OnNowPlayingChanged(null);
             }
         }
