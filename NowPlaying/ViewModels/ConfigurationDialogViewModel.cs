@@ -39,6 +39,16 @@ namespace NowPlaying.ViewModels
         private int _pollingInterval;
 
         /// <summary>
+        /// Gets or Sets the number of pixels to save the album art height and width to.
+        /// </summary>
+        public int AlbumArtSize
+        {
+            get => _albumArtSize;
+            set => SetProperty(ref _albumArtSize, value);
+        }
+        private int _albumArtSize;
+
+        /// <summary>
         /// Gets or Sets the path to export the album art to.
         /// </summary>
         public string AlbumArtPath
@@ -184,6 +194,7 @@ namespace NowPlaying.ViewModels
         {
             SourceUrl = configuration.SourceUrl;
             PollingInterval = configuration.PollingInterval;
+            AlbumArtSize = configuration.AlbumArtSize;
             AlbumArtPath = configuration.AlbumArtPath;
             SongInfoPath = configuration.SongInfoPath;
             SongInfoFormat = configuration.SongInfoFormat;
@@ -197,6 +208,7 @@ namespace NowPlaying.ViewModels
             {
                 SourceUrl = SourceUrl,
                 PollingInterval = PollingInterval,
+                AlbumArtSize = AlbumArtSize,
                 AlbumArtPath = AlbumArtPath,
                 SongInfoPath = SongInfoPath,
                 SongInfoFormat = SongInfoFormat,

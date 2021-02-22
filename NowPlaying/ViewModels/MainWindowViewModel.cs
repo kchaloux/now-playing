@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Drawing;
+using System.Drawing.Imaging;
 using Prism.Mvvm;
 using Prism.Commands;
 using NowPlaying.Model;
@@ -165,7 +167,13 @@ namespace NowPlaying.ViewModels
                 else
                 {
                     using var client = new WebClient();
-                    client.DownloadFile(new Uri(imageUrl), _configuration.AlbumArtPath);
+                    var imageData = client.DownloadData(new Uri(imageUrl));
+
+                    var size = _configuration.AlbumArtSize;
+                    using var ms = new MemoryStream(imageData);
+                    using var image = Image.FromStream(ms);
+                    using var bmp = new Bitmap(image, size, size);
+                    bmp.Save(_configuration.AlbumArtPath, ImageFormat.Jpeg);
                 }
             }
             catch (Exception ex)

@@ -23,6 +23,12 @@ namespace NowPlaying.Model
         public int PollingInterval { get; set; }
 
         /// <summary>
+        /// Gets or Sets the number of pixels to save the album art height and width to.
+        /// </summary>
+        [JsonPropertyName("album-art-size")]
+        public int AlbumArtSize { get; set; }
+
+        /// <summary>
         /// Gets or Sets the path to export the album art to.
         /// </summary>
         [JsonPropertyName("album-art-path")]
@@ -67,7 +73,8 @@ namespace NowPlaying.Model
         public Configuration()
         {
             SourceUrl = "http://localhost:9863/";
-            PollingInterval = 1000;
+            PollingInterval = 500;
+            AlbumArtSize = 500;
             AlbumArtPath = "./album.png";
             SongInfoPath = "./now-playing.txt";
             SongInfoFormat = "{song} by {artist}";
@@ -107,6 +114,7 @@ namespace NowPlaying.Model
         {
             SourceUrl = configuration.SourceUrl;
             PollingInterval = configuration.PollingInterval;
+            AlbumArtSize = configuration.AlbumArtSize;
             AlbumArtPath = configuration.AlbumArtPath;
             SongInfoPath = configuration.SongInfoPath;
             SongInfoFormat = configuration.SongInfoFormat;
@@ -145,6 +153,7 @@ namespace NowPlaying.Model
         {
             return SourceUrl == configuration.SourceUrl
                 && PollingInterval == configuration.PollingInterval
+                && AlbumArtSize == configuration.AlbumArtSize
                 && AlbumArtPath == configuration.AlbumArtPath
                 && SongInfoPath == configuration.SongInfoPath
                 && SongInfoFormat == configuration.SongInfoFormat

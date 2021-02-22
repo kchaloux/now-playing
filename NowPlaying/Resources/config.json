@@ -1,6 +1,7 @@
 {
   "source-url": "http://localhost:9863/",
-  "polling-interval": 1000,
+  "polling-interval": 500,
+  "album-art-size": 500, 
   "album-art-path": "./album.jpg",
   "song-info-path": "./now-playing.txt",
   "song-info-format": "{song} by {artist}",
