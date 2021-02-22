@@ -3,12 +3,12 @@ using System.IO;
 using System.Net;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Threading.Tasks;
 using Prism.Mvvm;
 using Prism.Commands;
 using NowPlaying.Model;
 using NowPlaying.Events;
 using Prism.Services.Dialogs;
-
 
 namespace NowPlaying.ViewModels
 {
@@ -39,6 +39,16 @@ namespace NowPlaying.ViewModels
         }
         private bool _isTrayIconVisible = true;
 
+        /// <summary>
+        /// Gets or Sets whether or not the context menu is open.
+        /// </summary>
+        public bool IsContextMenuOpen
+        {
+            get => _isContextMenuOpen;
+            set => SetProperty(ref _isContextMenuOpen, value);
+        }
+        private bool _isContextMenuOpen;
+
         #endregion
 
         #region Commands
@@ -50,16 +60,18 @@ namespace NowPlaying.ViewModels
         /// </summary>
         public DelegateCommand ShutdownCommand { get; }
 
-        private void OnShutdownCommandExecuted()
+        private async void OnShutdownCommandExecuted()
         {
+            _logger?.Log("Shutting Down");
             IsTrayIconVisible = false;
+            IsContextMenuOpen = false;
             _watcher.NowPlayingChanged -= WatcherOnNowPlayingChanged;
             _watcher.Stop();
             _watcher.Dispose();
-            _logger?.Log("Shutting Down");
             SaveConfiguration(_configuration, ConfigurationPath);
             UpdateSongInfo(null, null);
             UpdateAlbumArt(null);
+            await Task.Delay(100); // Allow the context menu time for the close animation to complete
             Environment.Exit(0);
         }
 

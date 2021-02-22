@@ -16,7 +16,7 @@
                     MenuActivation="LeftOrRightClick"
                     DoubleClickCommand="{Binding EditConfigurationCommand}">
         <tb:TaskbarIcon.ContextMenu>
-            <ContextMenu>
+            <ContextMenu StaysOpen="{Binding IsContextMenuOpen}">
                 <MenuItem Header="Settings" Command="{Binding EditConfigurationCommand}"/>
                 <Separator/>
                 <MenuItem Header="Exit" Command="{Binding ShutdownCommand}"/>
