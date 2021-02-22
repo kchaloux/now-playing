@@ -120,7 +120,6 @@ namespace NowPlaying.ViewModels
             {
                 { nameof(Configuration), CreateConfiguration() },
             }));
-            
         }
 
         #endregion

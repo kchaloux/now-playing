@@ -118,7 +118,7 @@ namespace NowPlaying.Model
 
         private async void TimerCallback(object sender, ElapsedEventArgs args)
         {
-            var timeoutCancellationTokenSource = new CancellationTokenSource(_configuration.PollingInterval*2);
+            var timeoutCancellationTokenSource = new CancellationTokenSource(_configuration.PollingInterval*5);
             CancellationTokenSource cancellationTokenSource;
             if (_cancellationTokenSource != null)
             {
@@ -130,7 +130,8 @@ namespace NowPlaying.Model
             {
                 cancellationTokenSource = timeoutCancellationTokenSource;
             }
-            
+
+            NowPlayingInfo nowPlayingInfo = null;
             try
             {
                 var web = new HtmlWeb();
@@ -155,11 +156,9 @@ namespace NowPlaying.Model
 
                         var song = lines[0];
                         var artist = lines[1];
-                        OnNowPlayingChanged(new NowPlayingInfo(artist, song, imgUrl));
-                        return;
+                        nowPlayingInfo = new NowPlayingInfo(artist, song, imgUrl);
                     }
                 }
-                OnNowPlayingChanged(null);
             }
             catch (TaskCanceledException)
             {
@@ -171,13 +170,13 @@ namespace NowPlaying.Model
             catch (Exception ex)
             {
                 _logger?.Log(ex);
-                OnNowPlayingChanged(null);
             }
             finally
             {
                 timeoutCancellationTokenSource.Dispose();
                 cancellationTokenSource.Dispose();
             }
+            OnNowPlayingChanged(nowPlayingInfo);
         }
 
         #endregion

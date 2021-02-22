@@ -19,21 +19,6 @@ namespace NowPlaying.Events
         public NowPlayingInfo NewInfo { get; }
 
         /// <summary>
-        /// Gets whether or not the artist changed between the old and new info.
-        /// </summary>
-        public bool ArtistChanged { get; }
-
-        /// <summary>
-        /// Gets whether or not the song changed between the old and new info.
-        /// </summary>
-        public bool SongChanged { get; }
-
-        /// <summary>
-        /// Gets whether or not the image URL changed between the old and new info.
-        /// </summary>
-        public bool ImageChanged { get; }
-
-        /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="oldInfo">The old <see cref="NowPlayingInfo"/></param>
@@ -42,9 +27,6 @@ namespace NowPlaying.Events
         {
             OldInfo = oldInfo;
             NewInfo = newInfo;
-            ArtistChanged = oldInfo?.Artist != newInfo?.Artist;
-            SongChanged = oldInfo?.Song != newInfo?.Song;
-            ImageChanged = oldInfo?.ImageUrl != newInfo?.ImageUrl;
         }
     }
 }

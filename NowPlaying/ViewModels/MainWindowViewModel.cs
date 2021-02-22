@@ -58,6 +58,8 @@ namespace NowPlaying.ViewModels
             _watcher.Dispose();
             _logger?.Log("Shutting Down");
             SaveConfiguration(_configuration, ConfigurationPath);
+            UpdateSongInfo(null, null);
+            UpdateAlbumArt(null);
             Environment.Exit(0);
         }
 
@@ -95,11 +97,13 @@ namespace NowPlaying.ViewModels
 
         #region Fields
 
+        private readonly object _lockObject = new object();
         private const string ConfigurationPath = "Resources/config.json";
         private readonly Configuration _configuration;
         private readonly Logger _logger;
         private readonly NowPlayingWatcher _watcher;
         private readonly IDialogService _dialogService;
+        private NowPlayingInfo _currentSong;
 
         #endregion
 
@@ -156,7 +160,7 @@ namespace NowPlaying.ViewModels
             }
         }
 
-        private void UpdateImage(string imageUrl)
+        private void UpdateAlbumArt(string imageUrl)
         {
             try
             {
@@ -190,8 +194,11 @@ namespace NowPlaying.ViewModels
                 {
                     File.Delete(_configuration.SongInfoPath);
                 }
-                var songInfo = _configuration.SongInfoFormat.Replace("{song}", song).Replace("{artist}", artist);
-                File.AppendAllText(_configuration.SongInfoPath, songInfo);
+                if (!string.IsNullOrWhiteSpace(artist) && !string.IsNullOrWhiteSpace(song))
+                {
+                    var songInfo = _configuration.SongInfoFormat.Replace("{song}", song).Replace("{artist}", artist);
+                    File.AppendAllText(_configuration.SongInfoPath, songInfo);
+                }
             }
             catch (Exception ex)
             {
@@ -205,22 +212,34 @@ namespace NowPlaying.ViewModels
 
         private void WatcherOnNowPlayingChanged(object sender, NowPlayingChangedEventArgs e)
         {
-            if (e.ImageChanged)
+            lock (_lockObject)
             {
-                UpdateImage(e.NewInfo?.ImageUrl);
+                if (_currentSong?.IsEquivalentTo(e.NewInfo) == true)
+                {
+                    return;
+                }
+
+                if (!string.IsNullOrWhiteSpace(e.NewInfo?.Artist) && !string.IsNullOrWhiteSpace(e.NewInfo?.Song))
+                {
+                    if (_currentSong?.ImageUrl != e.NewInfo?.ImageUrl)
+                    {
+                        UpdateAlbumArt(e.NewInfo?.ImageUrl);
+                    }
+                    UpdateSongInfo(e.NewInfo?.Artist, e.NewInfo?.Song);
+                    var artist = e.NewInfo?.Artist ?? "Unknown Artist";
+                    var song = e.NewInfo?.Song ?? "Unknown Song";
+                    Title = $"Now playing \"{song}\" by {artist}";
+                    _currentSong = e.NewInfo;
+                }
+                else
+                {
+                    Title = "No song playing";
+                    UpdateSongInfo(null, null);
+                    UpdateAlbumArt(null);
+                    _currentSong = null;
+                }
+                _logger?.Log(Title);
             }
-            if (e.SongChanged && e.NewInfo?.Song != "")
-            {
-                UpdateSongInfo(e.NewInfo?.Artist, e.NewInfo?.Song);
-                var artist = e.NewInfo?.Artist ?? "Unknown Artist";
-                var song = e.NewInfo?.Song ?? "Unknown Song";
-                Title = $"Now playing \"{song}\" by {artist}";
-            }
-            else
-            {
-                Title = "Not song playing";
-            }
-            _logger?.Log(Title);
         }
 
         #endregion
