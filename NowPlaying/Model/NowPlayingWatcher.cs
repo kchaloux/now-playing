@@ -162,10 +162,7 @@ namespace NowPlaying.Model
             }
             catch (TaskCanceledException)
             {
-                if (timeoutCancellationTokenSource.IsCancellationRequested)
-                {
-                    _logger?.Log("Polling timed out");
-                }
+                // Ignore - these are expected during timeouts or while quitting
             }
             catch (Exception ex)
             {
