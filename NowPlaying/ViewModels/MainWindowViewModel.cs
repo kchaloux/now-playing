@@ -3,7 +3,6 @@ using System.IO;
 using System.Net;
 using Prism.Mvvm;
 using Prism.Commands;
-using Microsoft.Practices.Prism.Interactivity.InteractionRequest;
 using NowPlaying.Model;
 using NowPlaying.Events;
 
@@ -48,33 +47,11 @@ namespace NowPlaying.ViewModels
         /// </summary>
         public DelegateCommand EditConfigurationCommand { get; }
 
-        /// <summary>
-        /// Interaction request to raise the <see cref="EditConfigurationCommand"/>.
-        /// </summary>
-        public InteractionRequest<Confirmation> LaunchEditConfigurationCommandRequest { get; }
-            = new InteractionRequest<Confirmation>();
-
         private void OnEditConfigurationCommandExecuted()
         {
             _watcher.Stop();
             var viewModel = new ConfigurationViewModel();
             viewModel.LoadParameters(_configuration);
-
-            var confirmation = new Confirmation()
-            {
-                Title = "Edit Configuration",
-                Content = viewModel,
-            };
-
-            LaunchEditConfigurationCommandRequest.Raise(confirmation, conf =>
-            {
-                if (conf.Confirmed)
-                {
-                    viewModel.SaveParameters(_configuration);
-                    SaveConfiguration(_configuration, ConfigurationPath);
-                }
-                _watcher.Start();
-            });
         }
 
         #endregion

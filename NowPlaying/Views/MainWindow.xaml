@@ -5,8 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:vm="clr-namespace:NowPlaying.ViewModels" 
-        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        xmlns:prism="http://www.codeplex.com/prism"
         d:DataContext="{d:DesignInstance vm:MainWindowViewModel, IsDesignTimeCreatable=False}"
         mc:Ignorable="d"
         Title="{Binding Title}"
@@ -15,11 +13,6 @@
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
-    <i:Interaction.Triggers>
-        <prism:InteractionRequestTrigger SourceObject="{Binding LaunchEditConfigurationCommandRequest}">
-            
-        </prism:InteractionRequestTrigger>
-    </i:Interaction.Triggers>
 
     <tb:TaskbarIcon Visibility="Visible"
                     ToolTipText="{Binding Title}"
