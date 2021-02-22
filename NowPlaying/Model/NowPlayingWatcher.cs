@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 using NowPlaying.Events;
 using NowPlaying.Extensions;
@@ -150,6 +151,7 @@ namespace NowPlaying.Model
                 }
                 OnNowPlayingChanged(null);
             }
+            catch (TaskCanceledException) { /* Ignore these, they are expected */ }
             catch (Exception ex)
             {
                 Logger?.Log(ex);

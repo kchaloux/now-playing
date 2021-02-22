@@ -5,6 +5,7 @@ using Prism.Mvvm;
 using Prism.Commands;
 using NowPlaying.Model;
 using NowPlaying.Events;
+using Prism.Services.Dialogs;
 
 
 namespace NowPlaying.ViewModels
@@ -50,8 +51,20 @@ namespace NowPlaying.ViewModels
         private void OnEditConfigurationCommandExecuted()
         {
             _watcher.Stop();
-            var viewModel = new ConfigurationViewModel();
-            viewModel.LoadParameters(_configuration);
+            _dialogService.ShowDialog("ConfigurationDialog", new DialogParameters
+            {
+                { "Configuration", _configuration },
+            }, EditConfigurationCallback);
+        }
+
+        private void EditConfigurationCallback(IDialogResult dialogResult)
+        {
+            if (dialogResult.Result == ButtonResult.OK)
+            {
+                var newConfiguration = dialogResult.Parameters.GetValue<Configuration>("Configuration");
+                _configuration.CopyParameters(newConfiguration);
+            }
+            _watcher.Start();
         }
 
         #endregion
@@ -62,14 +75,18 @@ namespace NowPlaying.ViewModels
         private readonly Configuration _configuration;
         private readonly Logger _logger;
         private readonly NowPlayingWatcher _watcher;
+        private readonly IDialogService _dialogService;
 
         #endregion
 
         #region Constructors
 
-        public MainWindowViewModel()
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public MainWindowViewModel(IDialogService dialogService)
         {
-            Title = "Now Playing";
+            _dialogService = dialogService;
 
             ShutdownCommand = new DelegateCommand(OnShutdownCommandExecuted);
             EditConfigurationCommand = new DelegateCommand(OnEditConfigurationCommandExecuted);
