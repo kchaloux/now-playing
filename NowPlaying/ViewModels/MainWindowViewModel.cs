@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net;
 using Prism.Mvvm;
@@ -175,21 +175,22 @@ namespace NowPlaying.ViewModels
 
         private void WatcherOnNowPlayingChanged(object sender, NowPlayingChangedEventArgs e)
         {
-            _logger?.Log("Now Playing Changed");
             if (e.ImageChanged)
             {
-                _logger?.Log($"  Image \"{e.OldInfo?.ImageUrl}\" => \"{e.NewInfo?.ImageUrl}\"");
                 UpdateImage(e.NewInfo?.ImageUrl);
             }
             if (e.SongChanged && e.NewInfo?.Song != "")
             {
-                _logger?.Log($"  Artist \"{e.OldInfo?.Artist}\" => \"{e.NewInfo?.Artist}\"");
-                _logger?.Log($"  Song \"{e.OldInfo?.Song}\" => \"{e.NewInfo?.Song}\"");
                 UpdateSongInfo(e.NewInfo?.Artist, e.NewInfo?.Song);
+                var artist = e.NewInfo?.Artist ?? "Unknown Artist";
+                var song = e.NewInfo?.Song ?? "Unknown Song";
+                Title = $"Now playing \"{song}\" by {artist}";
             }
-            var artist = e.NewInfo?.Artist ?? "Unknown Artist";
-            var song = e.NewInfo?.Song ?? "Unknown Song";
-            Title = $"{song} by {artist}";
+            else
+            {
+                Title = "Not song playing";
+            }
+            _logger?.Log(Title);
         }
 
         #endregion
