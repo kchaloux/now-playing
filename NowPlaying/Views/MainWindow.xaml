@@ -13,7 +13,8 @@
     <tb:TaskbarIcon Visibility="{Binding IsTrayIconVisible, Converter={convert:BooleanToVisibilityConverter}}"
                     ToolTipText="{Binding Title}"
                     IconSource="/Resources/icon.ico"
-                    MenuActivation="LeftOrRightClick">
+                    MenuActivation="LeftOrRightClick"
+                    DoubleClickCommand="{Binding EditConfigurationCommand}">
         <tb:TaskbarIcon.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Settings" Command="{Binding EditConfigurationCommand}"/>

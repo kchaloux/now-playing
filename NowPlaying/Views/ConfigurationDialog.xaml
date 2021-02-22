@@ -16,7 +16,8 @@
 
         <StackPanel Grid.Row="1"
                     HorizontalAlignment="Right"
-                    VerticalAlignment="Center">
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
             <Button Content="OK"
                     Command="{Binding OkCommand}"
                     Margin="2,2,1,2"/>
