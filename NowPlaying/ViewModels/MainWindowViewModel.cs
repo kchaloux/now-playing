@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using Prism.Mvvm;
@@ -10,6 +10,9 @@ using Prism.Services.Dialogs;
 
 namespace NowPlaying.ViewModels
 {
+    /// <summary>
+    /// View model for the main window / tray icon.
+    /// </summary>
     public class MainWindowViewModel : BindableBase
     {
         #region Properties
@@ -24,9 +27,21 @@ namespace NowPlaying.ViewModels
         }
         private string _title;
 
+        /// <summary>
+        /// Gets or Sets whether the tray icon should be displayed.
+        /// </summary>
+        public bool IsTrayIconVisible
+        {
+            get => _isTrayIconVisible;
+            set => SetProperty(ref _isTrayIconVisible, value);
+        }
+        private bool _isTrayIconVisible = true;
+
         #endregion
 
         #region Commands
+
+        #region Shutdown Command
 
         /// <summary>
         /// Shut the program down.
@@ -35,6 +50,7 @@ namespace NowPlaying.ViewModels
 
         private void OnShutdownCommandExecuted()
         {
+            IsTrayIconVisible = false;
             _watcher.NowPlayingChanged -= WatcherOnNowPlayingChanged;
             _watcher.Stop();
             _watcher.Dispose();
@@ -42,6 +58,10 @@ namespace NowPlaying.ViewModels
             SaveConfiguration(_configuration, ConfigurationPath);
             Environment.Exit(0);
         }
+
+        #endregion
+
+        #region EditConfiguration Command
 
         /// <summary>
         /// Edit the configuration file.
@@ -66,6 +86,8 @@ namespace NowPlaying.ViewModels
             }
             _watcher.Start();
         }
+
+        #endregion
 
         #endregion
 

@@ -5,15 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:vm="clr-namespace:NowPlaying.ViewModels" 
+        xmlns:convert="clr-namespace:NowPlaying.Converters"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vm:MainWindowViewModel, IsDesignTimeCreatable=False}"
         Width="0" Height="0" ShowInTaskbar="False" Visibility="Hidden" Title="{Binding Title}">
 
-    <tb:TaskbarIcon Visibility="Visible"
+    <tb:TaskbarIcon Visibility="{Binding IsTrayIconVisible, Converter={convert:BooleanToVisibilityConverter}}"
                     ToolTipText="{Binding Title}"
                     IconSource="/Resources/icon.ico"
-                    MenuActivation="LeftOrRightClick"
-                    PopupActivation="DoubleClick">
+                    MenuActivation="LeftOrRightClick">
         <tb:TaskbarIcon.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Settings" Command="{Binding EditConfigurationCommand}"/>
