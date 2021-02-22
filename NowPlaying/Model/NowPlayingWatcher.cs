@@ -55,10 +55,10 @@ namespace NowPlaying.Model
 
         #region Fields
 
-        private object _lockObject = new object();
+        private readonly object _lockObject = new object();
         private CancellationTokenSource _cancellationTokenSource;
         private NowPlayingInfo _lastNowPlayingInfo;
-        private readonly Timer _timer;
+        private Timer _timer;
 
         #endregion
 
@@ -73,8 +73,6 @@ namespace NowPlaying.Model
         {
             Configuration = configuration;
             Logger = logger;
-            _timer = new Timer(configuration.PollingInterval);
-            _timer.Elapsed += TimerCallback;
         }
 
         #endregion
@@ -93,6 +91,8 @@ namespace NowPlaying.Model
                     return;
                 }
                 _cancellationTokenSource = new CancellationTokenSource();
+                _timer = new Timer(Configuration.PollingInterval);
+                _timer.Elapsed += TimerCallback;
                 _timer.Start();
                 IsRunning = true;
             }
@@ -110,6 +110,9 @@ namespace NowPlaying.Model
                     return;
                 }
                 _timer.Stop();
+                _timer.Elapsed -= TimerCallback;
+                _timer.Dispose();
+                _timer = null;
                 _cancellationTokenSource.Cancel();
                 _cancellationTokenSource.Dispose();
                 _cancellationTokenSource = null;
@@ -122,9 +125,8 @@ namespace NowPlaying.Model
             var cancellationToken = _cancellationTokenSource?.Token ?? CancellationToken.None;
             try
             {
-                var remoteUrl = Configuration.SourceUrl.ToString();
                 var web = new HtmlWeb();
-                var doc = await web.LoadFromWebAsync(remoteUrl, Encoding.UTF8, cancellationToken);
+                var doc = await web.LoadFromWebAsync(Configuration.SourceUrl, Encoding.UTF8, cancellationToken);
 
                 var infoDiv = doc.DocumentNode.FirstDescendantWithClass("div", "card horizontal");
                 if (infoDiv != null)
@@ -177,7 +179,9 @@ namespace NowPlaying.Model
             {
                 lock (_lockObject)
                 {
-                    _timer.Stop();
+                    _timer?.Stop();
+                    _timer?.Dispose();
+                    _timer = null;
                     _cancellationTokenSource?.Cancel();
                     _cancellationTokenSource?.Dispose();
                     _cancellationTokenSource = null;
