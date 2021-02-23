@@ -8,7 +8,11 @@
         xmlns:convert="clr-namespace:NowPlaying.Converters"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vm:MainWindowViewModel, IsDesignTimeCreatable=False}"
-        Width="0" Height="0" ShowInTaskbar="False" Visibility="Hidden" Title="{Binding Title}">
+        Width="0"
+        Height="0"
+        ShowInTaskbar="False"
+        Visibility="Hidden"
+        Title="{Binding Title}">
 
     <tb:TaskbarIcon Visibility="{Binding IsTrayIconVisible, Converter={convert:BooleanToVisibilityConverter}}"
                     ToolTipText="{Binding Title}"

@@ -2,9 +2,9 @@
   "source-url": "http://localhost:9863/",
   "polling-interval": 500,
   "album-art-size": 500, 
-  "album-art-path": "./album.jpg",
-  "song-info-path": "./now-playing.txt",
+  "album-art-path": "album.jpg",
+  "song-info-path": "now-playing.txt",
   "song-info-format": "{song} by {artist}",
-  "log-file-path": "./log.txt",
-  "enable-logging": true,
+  "log-file-path": "log.txt",
+  "enable-logging": true
 }

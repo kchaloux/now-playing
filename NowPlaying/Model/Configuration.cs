@@ -75,10 +75,10 @@ namespace NowPlaying.Model
             SourceUrl = "http://localhost:9863/";
             PollingInterval = 500;
             AlbumArtSize = 500;
-            AlbumArtPath = "./album.png";
-            SongInfoPath = "./now-playing.txt";
+            AlbumArtPath = "album.png";
+            SongInfoPath = "now-playing.txt";
             SongInfoFormat = "{song} by {artist}";
-            LogFilePath = "./log.txt";
+            LogFilePath = "log.txt";
             EnableLogging = false;
         }
 

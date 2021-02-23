@@ -126,6 +126,8 @@ namespace NowPlaying.ViewModels
         /// </summary>
         public MainWindowViewModel(IDialogService dialogService)
         {
+            Title = "No song playing";
+
             _dialogService = dialogService;
 
             ShutdownCommand = new DelegateCommand(OnShutdownCommandExecuted);

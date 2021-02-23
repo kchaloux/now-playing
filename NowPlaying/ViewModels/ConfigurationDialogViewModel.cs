@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using Microsoft.Win32;
 using Prism.Mvvm;
 using NowPlaying.Model;
 using Prism.Commands;
@@ -135,7 +137,40 @@ namespace NowPlaying.ViewModels
         {
             RequestClose?.Invoke(new DialogResult(ButtonResult.Cancel));
         }
-        
+
+        #endregion
+
+        #region BrowseAlbumArtCommand
+
+        public DelegateCommand BrowseAlbumArtCommand { get; }
+
+        private void OnBrowseAlbumArtCommandExecuted()
+        {
+            AlbumArtPath = BrowseFile(AlbumArtPath, "JPEG Images (*.jpg, *.jpeg)| *.jpg; *.jpeg");
+        }
+
+        #endregion
+
+        #region BrowseSongInfoCommand
+
+        public DelegateCommand BrowseSongInfoCommand { get; }
+
+        private void OnBrowseSongInfoCommandExecuted()
+        {
+            SongInfoPath = BrowseFile(SongInfoPath, "Text Files (*.txt) | *.txt");
+        }
+
+        #endregion
+
+        #region BrowseLogFileCommand
+
+        public DelegateCommand BrowseLogFileCommand { get; }
+
+        private void OnBrowseLogFileCommandExecuted()
+        {
+            LogFilePath = BrowseFile(LogFilePath, "Text Files (*.txt)|*.txt");
+        }
+
         #endregion
 
         #endregion
@@ -158,6 +193,9 @@ namespace NowPlaying.ViewModels
         {
             OkCommand = new DelegateCommand(OnOkCommandExecuted);
             CancelCommand = new DelegateCommand(OnCancelCommandExecuted);
+            BrowseAlbumArtCommand = new DelegateCommand(OnBrowseAlbumArtCommandExecuted);
+            BrowseSongInfoCommand = new DelegateCommand(OnBrowseSongInfoCommandExecuted);
+            BrowseLogFileCommand = new DelegateCommand(OnBrowseLogFileCommandExecuted);
         }
 
         #endregion
@@ -214,6 +252,26 @@ namespace NowPlaying.ViewModels
                 LogFilePath = LogFilePath,
                 EnableLogging = EnableLogging,
             };
+        }
+
+        private static string BrowseFile(string filePath, string filter)
+        {
+            var initialDirectory = Path.GetDirectoryName(filePath);
+            if (string.IsNullOrWhiteSpace(initialDirectory))
+            {
+                initialDirectory = Directory.GetCurrentDirectory();
+            }
+            var fileName = Path.GetFileName(filePath);
+
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = filter,
+                FileName = fileName,
+                InitialDirectory = initialDirectory,
+            };
+            return saveFileDialog.ShowDialog() == true
+                ? saveFileDialog.FileName
+                : filePath;
         }
 
         #endregion

@@ -4,26 +4,173 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:NowPlaying.ViewModels"
-             mc:Ignorable="d" 
+             xmlns:converters="clr-namespace:NowPlaying.Converters"
+             xmlns:behaviors="clr-namespace:NowPlaying.Behaviors"
+             xmlns:ib="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:dialogs="http://prismlibrary.com/"
              d:DataContext="{d:DesignInstance viewModels:ConfigurationDialogViewModel, IsDesignTimeCreatable=False}"
-             Width="400"
-             Height="200">
-    <Grid>
+             mc:Ignorable="d">
+    <dialogs:Dialog.WindowStyle>
+        <Style TargetType="Window">
+            <Setter Property="dialogs:Dialog.WindowStartupLocation" Value="CenterScreen" />
+            <Setter Property="ResizeMode" Value="NoResize"/>
+            <Setter Property="ShowInTaskbar" Value="True"/>
+            <Setter Property="SizeToContent" Value="WidthAndHeight"/>
+        </Style>
+    </dialogs:Dialog.WindowStyle>
+
+    <Grid Margin="4">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       Grid.Row="0"
+                       Text="Source URL"
+                       ToolTip="The URL containing the Now Playing info to display"
+                       Style="{StaticResource LabelTextBlockStyle}"/>
+            <TextBlock Grid.Column="0"
+                       Grid.Row="1"
+                       Text="Polling Interval"
+                       ToolTip="Number of milliseconds to wait before polling the source URL for changes"
+                       Style="{StaticResource LabelTextBlockStyle}"/>
+            <TextBlock Grid.Column="0"
+                       Grid.Row="2"
+                       Text="Album Art Size"
+                       ToolTip="Size to save the album art, in pixels (width and height)"
+                       Style="{StaticResource LabelTextBlockStyle}"/>
+            <TextBlock Grid.Column="0"
+                       Grid.Row="3"
+                       Text="Album Art Path"
+                       ToolTip="The path to save the album art to"
+                       Style="{StaticResource LabelTextBlockStyle}"/>
+            <TextBlock Grid.Column="0"
+                       Grid.Row="4"
+                       Text="Song Info Path"
+                       ToolTip="The path to save the song information to"
+                       Style="{StaticResource LabelTextBlockStyle}"/>
+            <TextBlock Grid.Column="0"
+                       Grid.Row="5"
+                       Text="Song Info Format"
+                       ToolTip="The format to save the song information to"
+                       Style="{StaticResource LabelTextBlockStyle}"/>
+            <TextBlock Grid.Column="0"
+                       Grid.Row="6"
+                       Text="Enable Logging"
+                       ToolTip="Check to enable exporting log data to a file"
+                       Style="{StaticResource LabelTextBlockStyle}"/>
+            <TextBlock Grid.Column="0"
+                       Grid.Row="7"
+                       Text="Log File Path"
+                       ToolTip="The path to save the log file information to"
+                       Style="{StaticResource LabelTextBlockStyle}"/>
+
+            <TextBox Grid.Column="1"
+                     Grid.Row="0"
+                     Text="{Binding SourceUrl}"
+                     Style="{StaticResource TextBoxStyle}"/>
+            <TextBox Grid.Column="1"
+                     Grid.Row="1"
+                     Width="60"
+                     HorizontalAlignment="Right"
+                     Text="{Binding PollingInterval,
+                                    UpdateSourceTrigger=Explicit,
+                                    Converter={converters:NumericTextConverter}}"
+                     Style="{StaticResource IntegerTextBoxStyle}">
+                <ib:Interaction.Behaviors>
+                    <behaviors:NumericTextBoxBehavior IsDecimal="False" Minimum="100" Maximum="10000"/>
+                </ib:Interaction.Behaviors>
+            </TextBox>
+            <TextBox Grid.Column="1"
+                     Grid.Row="2"
+                     Width="60"
+                     HorizontalAlignment="Right"
+                     Text="{Binding AlbumArtSize,
+                                    UpdateSourceTrigger=Explicit,
+                                    Converter={converters:NumericTextConverter}}"
+                     Style="{StaticResource IntegerTextBoxStyle}">
+                <ib:Interaction.Behaviors>
+                    <behaviors:NumericTextBoxBehavior IsDecimal="False" Minimum="50" Maximum="1000"/>
+                </ib:Interaction.Behaviors>
+            </TextBox>
+            <TextBox Grid.Column="1"
+                     Grid.Row="3"
+                     Text="{Binding AlbumArtPath}"
+                     Style="{StaticResource TextBoxStyle}"/>
+            <TextBox Grid.Column="1"
+                     Grid.Row="4"
+                     Text="{Binding SongInfoPath}"
+                     Style="{StaticResource TextBoxStyle}"/>
+            <TextBox Grid.Column="1"
+                     Grid.Row="5"
+                     Text="{Binding SongInfoFormat}"
+                     Style="{StaticResource TextBoxStyle}"/>
+            <CheckBox Grid.Column="1"
+                      Grid.Row="6"
+                      IsChecked="{Binding EnableLogging}"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Center"
+                      Margin="4"/>
+            <TextBox Grid.Column="1"
+                     Grid.Row="7"
+                     Text="{Binding LogFilePath}"
+                     Style="{StaticResource TextBoxStyle}"/>
+            
+            <TextBlock Grid.Column="2"
+                       Grid.Row="1"
+                       Text="ms"
+                       ToolTip="Milliseconds"
+                       Style="{StaticResource UnitTextBlockStyle}"/>
+            <TextBlock Grid.Column="2"
+                       Grid.Row="2"
+                       Text="px"
+                       ToolTip="Pixels"
+                       Style="{StaticResource UnitTextBlockStyle}"/>
+            <Button Grid.Column="2"
+                    Grid.Row="3"
+                    Command="{Binding BrowseAlbumArtCommand}"
+                    Style="{StaticResource BrowseButtonStyle}"/>
+            <Button Grid.Column="2"
+                    Grid.Row="4"
+                    Command="{Binding BrowseSongInfoCommand}"
+                    Style="{StaticResource BrowseButtonStyle}"/>
+            <Button Grid.Column="2"
+                    Grid.Row="7"
+                    Command="{Binding BrowseLogFileCommand}"
+                    Style="{StaticResource BrowseButtonStyle}"/>
+        </Grid>
+
         <StackPanel Grid.Row="1"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
-                    Orientation="Horizontal">
+                    Orientation="Horizontal"
+                    Margin="0,2,0,2">
             <Button Content="OK"
                     Command="{Binding OkCommand}"
-                    Margin="2,2,1,2"/>
+                    Style="{StaticResource DialogButtonStyle}"
+                    Margin="4,0,2,0"/>
             <Button Content="Cancel"
                     Command="{Binding CancelCommand}"
-                    Margin="1,2,2,2"/>
+                    Style="{StaticResource DialogButtonStyle}"
+                    Margin="2,0,4,0"/>
         </StackPanel>
     </Grid>
 </UserControl>
